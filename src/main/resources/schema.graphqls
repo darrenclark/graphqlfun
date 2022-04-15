@@ -1,0 +1,27 @@
+schema {
+  query: Query
+}
+
+directive @constant(
+  json: String,
+  int: Int,
+  float: Float,
+  boolean: Boolean,
+  string: String
+) on FIELD_DEFINITION
+
+type Query {
+  someField: Int @constant(json: "88")
+
+  person: Person @constant(json: """{
+  "firstName": "John",
+  "lastName": "Smith",
+  "age": 29
+  }""")
+}
+
+type Person {
+  firstName: String
+  lastName: String
+  age: Int
+}

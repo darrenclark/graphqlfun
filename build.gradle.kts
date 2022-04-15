@@ -42,8 +42,13 @@ dependencies {
   implementation("io.vertx:vertx-lang-kotlin-coroutines")
   implementation("io.vertx:vertx-lang-kotlin")
   implementation(kotlin("stdlib-jdk8"))
+  implementation("com.expediagroup", "graphql-kotlin-spring-server", "5.3.2")
+  implementation("com.google.guava:guava:31.1-jre")
+  implementation("com.google.code.gson:gson:2.9.0")
   testImplementation("io.vertx:vertx-junit5")
   testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
+
+  runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.75.Final:osx-aarch_64")
 }
 
 val compileKotlin: KotlinCompile by tasks
