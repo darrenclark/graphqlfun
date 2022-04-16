@@ -12,6 +12,8 @@ type Query {
   }""")
 
   httpbinJson: HttpbinJson @http(url: "https://httpbin.org/json")
+
+  slideshow: Slideshow @http(url: "https://httpbin.org/json") @json(path: "$.slideshow")
 }
 
 type Person {

@@ -1,9 +1,8 @@
 package ca.darrenclark.graphqlfun.graphql.directives
 
 import ca.darrenclark.graphqlfun.utils.stringValue
-import ca.darrenclark.graphqlfun.utils.unwrap
+import ca.darrenclark.graphqlfun.utils.unwrapDeep
 import com.google.gson.JsonParser
-import graphql.language.StringValue
 import graphql.schema.DataFetcher
 import graphql.schema.GraphQLFieldDefinition
 import graphql.schema.idl.SchemaDirectiveWiring
@@ -30,7 +29,7 @@ class Http: SchemaDirectiveWiring {
     webClient.getAbs(url)
       .send()
       .onSuccess {
-        val json = JsonParser.parseString(it.bodyAsString()).unwrap()
+        val json = JsonParser.parseString(it.bodyAsString())
         result.complete(json)
       }
       .onFailure {

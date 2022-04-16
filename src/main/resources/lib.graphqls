@@ -5,3 +5,10 @@ directive @constant(
 directive @http(
   url: String!
 ) on FIELD_DEFINITION
+
+"""
+Accesses nested JSON fields using:  @json(path: "$.some.field")
+"""
+directive @json(
+  path: String!
+) on FIELD_DEFINITION

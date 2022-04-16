@@ -1,6 +1,9 @@
 package ca.darrenclark.graphqlfun
 
 import ca.darrenclark.graphqlfun.filesystem.LocalFilesystem
+import com.jayway.jsonpath.Configuration
+import com.jayway.jsonpath.JsonPath
+import com.jayway.jsonpath.spi.json.GsonJsonProvider
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.Promise
 import io.vertx.ext.web.Router

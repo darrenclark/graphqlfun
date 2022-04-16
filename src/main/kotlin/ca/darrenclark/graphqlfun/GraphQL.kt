@@ -1,8 +1,10 @@
 package ca.darrenclark.graphqlfun
 
 import ca.darrenclark.graphqlfun.filesystem.Filesystem
+import ca.darrenclark.graphqlfun.graphql.datafetchers.DefaultDataFetcher
 import ca.darrenclark.graphqlfun.graphql.directives.Constant
 import ca.darrenclark.graphqlfun.graphql.directives.Http
+import ca.darrenclark.graphqlfun.graphql.directives.Json
 import com.expediagroup.graphql.generator.execution.FunctionDataFetcher
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
@@ -26,8 +28,10 @@ import graphql.language.StringValue
 import graphql.language.UnionTypeDefinition
 import graphql.schema.AsyncDataFetcher
 import graphql.schema.DataFetcher
+import graphql.schema.DataFetcherFactories
 import graphql.schema.DataFetchingEnvironment
 import graphql.schema.GraphQLDirective
+import graphql.schema.PropertyDataFetcher
 import graphql.schema.TypeResolver
 import graphql.schema.idl.*
 import io.vertx.ext.web.client.WebClient
@@ -59,7 +63,13 @@ suspend fun setupGraphQL(fs: Filesystem): GraphQL {
 
 fun buildDynamicRuntimeWiring(): RuntimeWiring {
   return RuntimeWiring.newRuntimeWiring()
+    .wiringFactory(object : WiringFactory {
+      override fun getDefaultDataFetcher(environment: FieldWiringEnvironment): DataFetcher<*> {
+        return DefaultDataFetcher(environment.fieldDefinition.name)
+      }
+    })
     .directive("http", Http())
     .directive("constant", Constant())
+    .directive("json", Json())
     .build()
 }

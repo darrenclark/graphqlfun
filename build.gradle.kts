@@ -46,6 +46,7 @@ dependencies {
   implementation("com.expediagroup", "graphql-kotlin-server", "6.0.0-alpha.1")
   implementation("com.google.guava:guava:31.1-jre")
   implementation("com.google.code.gson:gson:2.9.0")
+  implementation("com.jayway.jsonpath:json-path:2.7.0")
   testImplementation("io.vertx:vertx-junit5")
   testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
 
