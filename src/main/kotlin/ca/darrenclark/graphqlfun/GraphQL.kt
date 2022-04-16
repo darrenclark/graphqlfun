@@ -1,5 +1,6 @@
 package ca.darrenclark.graphqlfun
 
+import ca.darrenclark.graphqlfun.filesystem.Filesystem
 import com.expediagroup.graphql.generator.execution.FunctionDataFetcher
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
@@ -29,17 +30,26 @@ import graphql.schema.TypeResolver
 import graphql.schema.idl.*
 import io.vertx.ext.web.client.WebClient
 import io.vertx.kotlin.coroutines.await
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.reduce
 import java.net.URL
 import java.util.concurrent.CompletableFuture
 import javax.print.DocFlavor.STRING
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.reflect
 
-fun setupGraphQL(): GraphQL {
+suspend fun setupGraphQL(fs: Filesystem): GraphQL {
   val schemaParser = SchemaParser()
   val schemaGenerator = SchemaGenerator()
 
-  val typeRegistry = Resources.getResource("schema.graphqls").openStream().use { schemaParser.parse(it) }
+  val typeRegistry =
+    fs.listFiles("**/*.graphqls")
+      .map {
+        val fileContents = fs.getFileContents(it)
+        schemaParser.parse(fileContents)
+      }
+      .reduce { accumulator, value -> accumulator.merge(value) }
 
   val schema = schemaGenerator.makeExecutableSchema(typeRegistry, buildDynamicRuntimeWiring())
   return GraphQL.newGraphQL(schema).build()
@@ -159,7 +169,7 @@ fun httpDataFetcher(url: String) = DataFetcher<CompletableFuture<Any>> { env ->
   webClient.getAbs(url)
     .send()
     .onSuccess {
-O      val json = JsonParser.parseString(it.bodyAsString()).unwrap()
+      val json = JsonParser.parseString(it.bodyAsString()).unwrap()
       result.complete(json)
     }
     .onFailure {

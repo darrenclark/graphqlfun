@@ -2,18 +2,6 @@ schema {
   query: Query
 }
 
-directive @constant(
-  json: String,
-  int: Int,
-  float: Float,
-  boolean: Boolean,
-  string: String
-) on FIELD_DEFINITION
-
-directive @http(
-  url: String!
-) on FIELD_DEFINITION
-
 type Query {
   someField: Int @constant(json: "88")
 

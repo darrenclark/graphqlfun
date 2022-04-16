@@ -1,5 +1,6 @@
 package ca.darrenclark.graphqlfun
 
+import ca.darrenclark.graphqlfun.filesystem.LocalFilesystem
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.Promise
 import io.vertx.ext.web.Router
@@ -10,13 +11,13 @@ import io.vertx.ext.web.handler.graphql.GraphQLHandlerOptions
 import io.vertx.ext.web.handler.graphql.GraphiQLHandler
 
 import io.vertx.ext.web.handler.graphql.GraphiQLHandlerOptions
+import io.vertx.kotlin.coroutines.CoroutineVerticle
+import io.vertx.kotlin.coroutines.await
 
 
+class MainVerticle : CoroutineVerticle() {
 
-
-class MainVerticle : AbstractVerticle() {
-
-  override fun start(startPromise: Promise<Void>) {
+  override suspend fun start() {
     val router = Router.router(vertx)
 
     router.route().handler(BodyHandler.create())
@@ -29,7 +30,9 @@ class MainVerticle : AbstractVerticle() {
 
     val webClient = WebClient.create(vertx)
 
-    val handler = GraphQLHandler.create(setupGraphQL()).beforeExecute {
+    val fs = LocalFilesystem("./src/main/resources/")
+
+    val handler = GraphQLHandler.create(setupGraphQL(fs)).beforeExecute {
       it.builder().graphQLContext(mapOf("webClient" to webClient))
     }
 
@@ -41,17 +44,14 @@ class MainVerticle : AbstractVerticle() {
 //    router.route("/graphiql").handler { it.reroute("/graphiql/"); it.next() }
     router.route("/graphiql/*").handler(graphiQLHandler)
 
-
-    vertx
+    val server = vertx
       .createHttpServer()
       .requestHandler(router)
-      .listen(8888) { http ->
-        if (http.succeeded()) {
-          startPromise.complete()
-          println("HTTP server started on port 8888")
-        } else {
-          startPromise.fail(http.cause());
-        }
-      }
+      .listen(8888)
+      .await()
+
+    println("""
+      Server started at http://localhost:8888
+    """.trimIndent())
   }
 }
