@@ -1,9 +1,5 @@
 directive @constant(
-  json: String,
-  int: Int,
-  float: Float,
-  boolean: Boolean,
-  string: String
+  json: String
 ) on FIELD_DEFINITION
 
 directive @http(
