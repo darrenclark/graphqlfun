@@ -10,6 +10,10 @@ directive @constant(
   string: String
 ) on FIELD_DEFINITION
 
+directive @http(
+  url: String!
+) on FIELD_DEFINITION
+
 type Query {
   someField: Int @constant(json: "88")
 
@@ -18,10 +22,29 @@ type Query {
   "lastName": "Smith",
   "age": 29
   }""")
+
+  httpbinJson: HttpbinJson @http(url: "https://httpbin.org/json")
 }
 
 type Person {
   firstName: String
   lastName: String
   age: Int
+}
+
+type HttpbinJson {
+  slideshow: Slideshow
+}
+
+type Slideshow {
+  author: String
+  date: String
+  slides: [Slide]
+  title: String
+}
+
+type Slide {
+  title: String
+  type: String
+  items: [String]
 }

@@ -3,8 +3,10 @@ package ca.darrenclark.graphqlfun
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.Promise
 import io.vertx.ext.web.Router
+import io.vertx.ext.web.client.WebClient
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.handler.graphql.GraphQLHandler
+import io.vertx.ext.web.handler.graphql.GraphQLHandlerOptions
 import io.vertx.ext.web.handler.graphql.GraphiQLHandler
 
 import io.vertx.ext.web.handler.graphql.GraphiQLHandlerOptions
@@ -25,12 +27,18 @@ class MainVerticle : AbstractVerticle() {
         .end("Hello from Vert.x!")
     }
 
-    router.route("/graphql").handler(GraphQLHandler.create(setupGraphQL()))
+    val webClient = WebClient.create(vertx)
+
+    val handler = GraphQLHandler.create(setupGraphQL()).beforeExecute {
+      it.builder().graphQLContext(mapOf("webClient" to webClient))
+    }
+
+    router.route("/graphql").handler(handler)
 
     val options = GraphiQLHandlerOptions().setEnabled(true)
 
     val graphiQLHandler = GraphiQLHandler.create(options)
-    router.route("/graphiql").handler(graphiQLHandler)
+//    router.route("/graphiql").handler { it.reroute("/graphiql/"); it.next() }
     router.route("/graphiql/*").handler(graphiQLHandler)
 
 
